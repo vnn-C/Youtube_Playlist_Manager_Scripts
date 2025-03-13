@@ -135,6 +135,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+*.apps.googleusercontent.com.json
 
 # Spyder project settings
 .spyderproject
