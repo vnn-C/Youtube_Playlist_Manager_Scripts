@@ -302,8 +302,8 @@ def insertSong(youtube, currPL, pId):
 
     return temp
 
-#prints CurrPL Contents, helper function for delete function, returns two dictionaries of video titles and video ids for later use
-def print_playlist(playlist):
+#prints playlist items, returns two dictionaries of video titles and video ids for delete function's use
+def printPlaylist(playlist):
     idHash = dict()
     vidHash = dict()
     for idx, row in playlist.iterrows():
@@ -321,7 +321,7 @@ def print_playlist(playlist):
 #deletes video from generated playlist
 def deleteFromPlaylist(youtube, currPL):
     genId = os.getenv("PLAYLIST_ID")
-    idHash, vidHash = print_playlist(currPL)
+    idHash, vidHash = printPlaylist(currPL)
     delChoice = input("Enter the video number of the video you want to delete or press x to exit:\n")
 
     if delChoice == "x":

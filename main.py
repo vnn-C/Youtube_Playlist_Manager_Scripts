@@ -80,11 +80,16 @@ def main():
 
 #While loop for decision-making part of the code
     while True:
-        choice = input("Welcome: Select an option:\nu - add new song\np - add song playlist\nl - update playlist with new liked videos\nd - delete song from playlist\nx- exit\n")
+        choice = input("Welcome: Select an option:\nv - view playlist items\nu - add new song\np - add song playlist\nl - update playlist with new liked videos\nd - delete song from playlist\nx- exit\n")
 
         #exit app
         if choice == "x":
             return 0
+        #display playlist items
+        elif choice == "v":
+            print("Displaying playlist items:\n")
+            idHash, vidHash = PlaylistItems.printPlaylist(currPL)
+            print("Returning to main page...\n")
         #add new song to the generated playlist
         elif choice == "u":
             currPL = PlaylistItems.insertSong(youtube, currPL, playlistID)
