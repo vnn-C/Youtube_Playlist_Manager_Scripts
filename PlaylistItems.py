@@ -110,6 +110,7 @@ def getPlaylist(youtube, pId):
             contentDetails = i.get("contentDetails", {})
             title = snippet.get("title")
             tags = snippet.get("tags", [])
+            itemId = i.get("id")
 
 #dataframe structure can be changed without affecting any preexisting stored versions
             data.append({
@@ -117,6 +118,7 @@ def getPlaylist(youtube, pId):
                 "title": title,
                 "channelId" : snippet.get("channelId"),
                 "categoryId" : snippet.get("categoryId"),
+                "itemId" : itemId,
                 "tags" : tags
             })
 
@@ -300,8 +302,47 @@ def insertSong(youtube, currPL, pId):
 
     return temp
 
-#deletes video from generated playlist, scrapped for now
+#prints CurrPL Contents, helper function for delete function, returns two dictionaries of video titles and video ids for later use
+def print_playlist(playlist):
+    idHash = dict()
+    vidHash = dict()
+    for idx, row in playlist.iterrows():
+        title = row["title"]
+        print(f"Video #{idx}: {title}")
+        idHash[idx] = row["itemId"]
+        vidHash[idx] = title
+    
+    return idHash, vidHash
 #Function requires data on the playlist item's position in the playlist?
+#TODO: Started May 17, 2025 Add Delete functionality. - Done
+#Playlist Item IDs for every video is already stored in CurrPL
+#Delete Request Body does not need the playlist's ID
+
+#deletes video from generated playlist
 def deleteFromPlaylist(youtube, currPL):
     genId = os.getenv("PLAYLIST_ID")
+    idHash, vidHash = print_playlist(currPL)
+    delChoice = input("Enter the video number of the video you want to delete or press x to exit:\n")
+
+    if delChoice == "x":
+        print("Exiting video deletion...\n")
+        return currPL
+    elif int(delChoice) in idHash.keys():
+        delConfirm = input(f"Are you sure you want to delete {vidHash[int(delChoice)]}?\ny for yes\nn for no\n")
+        if delConfirm == "y":
+            try:
+                request = youtube.playlistItems().delete(
+                    id=idHash[int(delChoice)]
+                )
+                request.execute()
+                currPL = currPL[currPL["itemId"] != idHash[int(delChoice)]]
+            except Exception as e:
+                print(f"Error with deleting video\n{e}")
+            
+            print("Successfully deleted video\n")
+            
+    else:
+        print("Video not found.\nExiting video deletion...\n")
+    
+    print("Returning to main page...\n")
     return currPL

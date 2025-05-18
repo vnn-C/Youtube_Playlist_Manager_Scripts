@@ -32,7 +32,7 @@ def main():
     client_secrets_file = os.getenv("CLIENT_SECRET")  
 
 #TODO Started at 5/17/2025: Configure script to open Google Chrome for authentication. Problem: The authentication opens in Microsoft Edge by default
-#Could not accomplish due to how flow.run_local_server works. Changing the default browser to Google Chrome in Settings can resolve the problem
+#Could not accomplish due to how flow.run_local_server() works. Changing the default browser to Google Chrome in Settings can resolve the problem
 
     chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
     try:
@@ -96,7 +96,7 @@ def main():
             currPL = LikedVids.insertLikedVids(youtube, currPL, quota)
         #deletes a song from the playlist, scrapped since it would likely increase the quota usage needlessly
         elif choice == "d":
-            print("The delete function is currently not implemented\n")
+            currPL = PlaylistItems.deleteFromPlaylist(youtube, currPL)
             #return 0
         #searching for video tags for debugging
         #elif choice == "t":
