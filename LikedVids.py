@@ -27,7 +27,7 @@ def getLikedVids(youtube, currIDs):
             pageToken=nextPageToken
             
         )
-
+        skip = False
         response = request.execute()
         newQuota += 1
 
@@ -37,7 +37,6 @@ def getLikedVids(youtube, currIDs):
         for i in items:
 
             print(f"Video #{vidCount}\n")
-            
 
             itemId = ""
             snippet = i.get("snippet", {})
@@ -55,7 +54,7 @@ def getLikedVids(youtube, currIDs):
 
 #filters out video that are not songs, filtering is not perfect
 #TODO: Change filter conditionals to include a pormpt for music videos that cannot be verified - Done
-
+#TODO: Add skip option to skip older liked videos that I don't want to add - Done
             #if video is not music
             if categoryId != "10":
                 print(f"Video #{vidCount} is not likely music\n")
@@ -63,7 +62,7 @@ def getLikedVids(youtube, currIDs):
             elif vId in currIDs:
                 print(f"Video # {vidCount} is already in the playlist\n")
             else:
-                vidChoice = input(f"Do you want to input {title} by {cTitle}? y for yes or n for no.\n URL: https://www.youtube.com/watch?v={vId}\n")
+                vidChoice = input(f"Do you want to input {title} by {cTitle}?\ny for yes\nn for no\ns if you are done adding videos.\n URL: https://www.youtube.com/watch?v={vId}\n")
                 if vidChoice == "y":
                     data.append({
                             "videoId": vId,
@@ -73,9 +72,13 @@ def getLikedVids(youtube, currIDs):
                             "itemId" : itemId,
                             "tags" : tags
                             })
-                    
+                if vidChoice == "s":
+                    print("Skipping liked videos\n")
+                    skip = True
+                    break
                 else:
                     print(f"Video # {vidCount} not added\n")
+            
             vidCount += 1
 
 #The Tag filtering conditional might be causing the false positives in the liked video insertion
@@ -129,7 +132,7 @@ def getLikedVids(youtube, currIDs):
 #TODO: Filtering code that does not check the video's tags - Done, Works successfully without false positives
             
         nextPageToken = response.get("nextPageToken")
-        if not nextPageToken:
+        if not nextPageToken or skip == True:
             break
 
 

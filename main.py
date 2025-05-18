@@ -6,6 +6,7 @@ import googleapiclient.errors
 from dotenv import load_dotenv, dotenv_values
 import LikedVids
 import PlaylistItems
+import webbrowser
 
 load_dotenv()
 
@@ -29,10 +30,31 @@ def main():
     api_version = "v3"
     DEVELOPER_KEY = os.getenv("API_KEY")
     client_secrets_file = os.getenv("CLIENT_SECRET")  
+
+#TODO Started at 5/17/2025: Configure script to open Google Chrome for authentication. Problem: The authentication opens in Microsoft Edge by default
+#Could not accomplish due to how flow.run_local_server works. Changing the default browser to Google Chrome in Settings can resolve the problem
+
+    chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+    try:
+        webbrowser.register("chrome", None, webbrowser.BackgroundBrowser(chrome_path))
+        chrome_browser = webbrowser.get("chrome")
+    except webbrowser.Error:
+        print(f"Error: Could not open Google Chrome browser")
+        chrome_browser = None
+
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
             client_secrets_file, scopes)
+
 #flow.run_local_server is not present in the Youtube API's code sample, this code was changed to allow the script to run on a laptop
-    credentials = flow.run_local_server(port=0)
+    credentials = flow.run_local_server(port=0, open_browser=True)
+    #flow.run_local_console does not work
+    #credentials = flow.run_console(authorization_code_message='Enter the authorization code: ')
+
+    #if chrome_browser:
+    #    chrome_browser.open_new(flow.redirect_uri)
+    #else:
+    #    webbrowser.open_new(flow.redirect_uri)
+
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, credentials=credentials, developerKey=DEVELOPER_KEY)
 
